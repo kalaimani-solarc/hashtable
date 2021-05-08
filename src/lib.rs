@@ -55,6 +55,11 @@ impl<K, V> HashTable<K, V> where K: Eq + Hash + Display {
         self.buckets[index].get(key)
     }
 
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        let index = Self::hash(key);
+        self.buckets[index].get_mut(key)
+    }
+
     fn hash(key: &K) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash(&mut hasher);
@@ -119,6 +124,23 @@ impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
             }
         }
     }
+
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        let mut current = &mut self.head;
+        loop {
+            match current {
+                None => break,
+                Some(node) if &node.key == key => {
+                    break;
+                }
+                Some(node) => {
+                    current = &mut node.next;
+                }
+            }
+        }
+
+        current.as_mut().map(|node| &mut node.value)
+    }
 }
 
 #[cfg(test)]
@@ -141,6 +163,10 @@ mod tests {
 
         hashtable.remove(&"Lion".to_string());
         assert_eq!(None, hashtable.get(&"Lion".to_string()));
+
+        *hashtable.get_mut(&"Elephant".to_string()).unwrap() = 55;
+        assert_eq!(Some(&55), hashtable.get(&"Elephant".to_string()));
+
         assert_eq!(3, hashtable.len());
     }
 }
