@@ -1,14 +1,13 @@
 use std::hash::{Hash, Hasher};
 use std::collections::hash_map::DefaultHasher;
-use std::fmt::Display;
 
 #[derive(Debug)]
-pub struct HashTable<K, V> where K: Eq + Hash + Display {
+pub struct HashTable<K, V> where K: Eq + Hash {
     buckets: Vec<Bucket<K, V>>,
 }
 
 #[derive(Debug)]
-struct Bucket<K, V> where K: Eq + Hash + Display {
+struct Bucket<K, V> where K: Eq + Hash {
     head: Link<K, V>,
     len: usize,
 }
@@ -16,7 +15,7 @@ struct Bucket<K, V> where K: Eq + Hash + Display {
 type Link<K, V> = Option<Box<Node<K, V>>>;
 
 #[derive(Debug)]
-struct Node<K, V> where K: Eq + Hash + Display {
+struct Node<K, V> where K: Eq + Hash {
     key: K,
     value: V,
     next: Link<K, V>,
@@ -24,7 +23,7 @@ struct Node<K, V> where K: Eq + Hash + Display {
 
 const BUCKET_SIZE: usize = 8;
 
-impl<K, V> HashTable<K, V> where K: Eq + Hash + Display {
+impl<K, V> HashTable<K, V> where K: Eq + Hash {
     pub fn new() -> Self {
         let mut buckets = Vec::with_capacity(BUCKET_SIZE);
 
@@ -67,7 +66,7 @@ impl<K, V> HashTable<K, V> where K: Eq + Hash + Display {
     }
 }
 
-impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
+impl<K, V> Bucket<K, V> where K: Hash + Eq {
     pub fn insert(&mut self, key: K, value: V) {
         let mut current = &mut self.head;
 
