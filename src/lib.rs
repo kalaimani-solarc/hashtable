@@ -1,6 +1,5 @@
 use std::hash::{Hash, Hasher};
 use std::collections::hash_map::DefaultHasher;
-use std::option::Option::Some;
 use std::fmt::Display;
 
 #[derive(Debug)]
@@ -75,12 +74,8 @@ impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
         loop {
             match current {
                 None => break,
-                Some(node) if node.key == key => {
-                    break;
-                }
-                Some(node) => {
-                    current = &mut node.next;
-                }
+                Some(node) if node.key == key => break,
+                Some(node) => current = &mut node.next,
             }
         };
 
@@ -88,7 +83,7 @@ impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
             node.value = value
         } else {
             let head = self.head.take();
-            self.head = Some(Box::new(Node{ key, value, next: head}));
+            self.head = Some(Box::new(Node { key, value, next: head }));
             self.len += 1;
         }
     }
@@ -114,15 +109,13 @@ impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
         let mut current = &self.head;
         loop {
             match current {
-                None => return None,
-                Some(node) if &node.key == key => {
-                    return Some(&node.value);
-                }
-                Some(node) => {
-                    current = &node.next;
-                }
+                None => break,
+                Some(node) if &node.key == key => break,
+                Some(node) => current = &node.next,
             }
         }
+
+        current.as_ref().map(|node| &node.value)
     }
 
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
@@ -130,12 +123,8 @@ impl<K, V> Bucket<K, V> where K: Hash + Eq + Display {
         loop {
             match current {
                 None => break,
-                Some(node) if &node.key == key => {
-                    break;
-                }
-                Some(node) => {
-                    current = &mut node.next;
-                }
+                Some(node) if &node.key == key => break,
+                Some(node) => current = &mut node.next,
             }
         }
 
